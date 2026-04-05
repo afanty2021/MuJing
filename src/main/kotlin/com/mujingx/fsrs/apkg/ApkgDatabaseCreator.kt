@@ -88,7 +88,11 @@ internal class ApkgDatabaseCreator {
 
     private fun createDatabaseStructure(conn: Connection, format: ApkgFormat) {
         conn.createStatement().use { stmt ->
-            stmt.execute("PRAGMA user_version = ${format.schemaVersion}")
+            // schemaVersion comes from ApkgFormat enum, a trusted compile-time integer.
+            // Validate non-negative as a safety guard against accidental misuse.
+            val schemaVersion = format.schemaVersion
+            require(schemaVersion >= 0) { "schemaVersion must be non-negative: $schemaVersion" }
+            stmt.execute("PRAGMA user_version = $schemaVersion")
             
             // 创建表结构
             createColTable(stmt, format)
