@@ -438,7 +438,9 @@ fun resolveCargoPath(): String {
  * 参考 whisper.cpp 的下载脚本
  */
 fun downloadWhisperModel(model: String, modelsDir: File) {
-    val src = "https://huggingface.co/ggerganov/whisper.cpp"
+    // 支持 HF_ENDPOINT 环境变量使用国内镜像
+    val hfEndpoint = System.getenv("HF_ENDPOINT") ?: "https://huggingface.co"
+    val src = "$hfEndpoint/ggerganov/whisper.cpp"
     val pfx = "resolve/main/ggml"
     val url = "$src/$pfx-$model.bin"
     val outputFile = File(modelsDir, "ggml-$model.bin")
