@@ -1,0 +1,128 @@
+# Detekt 配置文件
+# 基于 detekt 默认配置，针对幕境项目调整
+
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+output-reports:
+  active: true
+
+# ============================================
+# 规则配置
+# ============================================
+
+complexity:
+  active: true
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 30
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 20
+    thresholdInClasses: 15
+
+comments:
+  active: true
+  AbsentOrWrongFileLicense:
+    active: false
+  CommentOverPrivateFunction:
+    active: false
+  CommentOverPrivateProperty:
+    active: false
+  EndOfSentenceFormat:
+    active: false
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
+
+coroutines:
+  active: true
+  GlobalCoroutineUsage:
+    active: false
+
+empty-blocks:
+  active: true
+
+exceptions:
+  active: true
+  SwallowedException:
+    active: true
+    ignoredExceptionTypes:
+      - InterruptedException
+      - MalformedURLException
+      - NumberFormatException
+
+formatting:
+  active: true
+  autoCorrect: true
+  FinalNewline:
+    active: true
+  NoTrailingSpaces:
+    active: true
+  PackageName:
+    active: true
+
+naming:
+  active: true
+  FunctionNaming:
+    active: true
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+
+performance:
+  active: true
+
+potential-bugs:
+  active: true
+
+style:
+  active: true
+  ForbiddenComment:
+    active: true
+    comments:
+      - 'TODO:'
+      - 'FIXME:'
+      - 'STOPSHIP:'
+  MagicNumber:
+    active: true
+    ignoreNumbers:
+      - '-1'
+      - '0'
+      - '1'
+      - '2'
+    ignoreHashCodeFunction: true
+    ignorePropertyDeclaration: true
+    ignoreAnnotation: true
+    ignoreNamedArgument: true
+    ignoreExtensionFunctions: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 160
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeCommentStatements: false
+  MayBeConst:
+    active: true
+  ReturnCount:
+    active: true
+    max: 3
+    excludedFunctions:
+      - 'equals'
+    excludeReturnFromLambda: true
+  UnusedPrivateMember:
+    active: true
+  UseOrEmpty:
+    active: true
+  VarCouldBeVal:
+    active: true

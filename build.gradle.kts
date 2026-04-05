@@ -19,6 +19,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
     kotlin("plugin.serialization")
     id("com.github.gmazzo.buildconfig") version "5.3.5"
+    // 代码质量检查
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }
 
 group = "com.mujingx"
@@ -496,4 +498,26 @@ fun downloadWhisperModel(model: String, modelsDir: File) {
 
         throw e
     }
+}
+
+// ============================================
+// Detekt 代码质量检查配置
+// ============================================
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom("$projectDir/config/detekt/detekt.yml")
+    baseline = file("$projectDir/config/detekt/baseline.xml")
+}
+
+// 与 test 任务并行执行，提升构建速度
+tasks.named("check") {
+    dependsOn(tasks.named("detekt"))
+}
+
+// 为 detekt 配置编译类路径
+dependencies {
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
+    // detekt-compose 暂时不可用，等待发布
 }
