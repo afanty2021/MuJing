@@ -39,10 +39,10 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
 
-    // filekit 0.12.0 带来的依赖版本控制
-    // filekit 0.12.0 依赖 kotlinx-serialization-core:1.7.3，但我们需要使用更新的版本
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    // 统一使用与 filekit 0.12.0 兼容的版本
+    // filekit 依赖 serialization-core:1.7.3，此处显式声明以覆盖传递依赖
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     implementation ("org.jetbrains.compose.material:material-icons-extended:1.0.1")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
