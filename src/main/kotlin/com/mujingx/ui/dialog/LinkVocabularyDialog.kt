@@ -588,9 +588,15 @@ fun LinkVocabularyDialog(
                             Divider()
                             Box(modifier = Modifier.fillMaxWidth().height(500.dp)) {
                                 val scrollState = rememberLazyListState()
+                                // 性能优化：添加 key 参数使用单词作为唯一标识符，添加 contentType 参数
                                 LazyColumn(Modifier.fillMaxSize(), scrollState) {
 
-                                    items(prepareLinks.toList()) { (word, captions) ->
+                                    items(
+                                        count = prepareLinks.size,
+                                        key = { index -> prepareLinks.keys.elementAt(index) },
+                                        contentType = { 0 }
+                                    ) { index ->
+                                        val (word, captions) = prepareLinks.entries.elementAt(index)
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.Start,

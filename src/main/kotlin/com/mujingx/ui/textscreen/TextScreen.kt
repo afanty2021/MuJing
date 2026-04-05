@@ -255,6 +255,7 @@ fun TextScreen(
                         }
                     }
 
+                    // 性能优化：添加 key 参数使用行号作为唯一标识符，添加 contentType 参数
                     LazyColumn(
                         state = listState,
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -265,7 +266,12 @@ fun TextScreen(
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
                             .horizontalScroll(stateHorizontal),
                     ) {
-                        itemsIndexed(lines) {index,item ->
+                        items(
+                            count = lines.size,
+                            key = { index -> index },
+                            contentType = { 0 }
+                        ) { index ->
+                            val item = lines[index]
                             val line = item.ifEmpty { " " }
                             // 当 384 行的 BasicTextField 失去焦点时自动清理 typingResult 和 textFieldValue
                             val typingResult = remember { mutableStateListOf<Pair<Char, Boolean>>() }

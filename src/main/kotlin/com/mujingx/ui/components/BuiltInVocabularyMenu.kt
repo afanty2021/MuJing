@@ -193,6 +193,7 @@ fun VocabularyList(
 
         Box(Modifier.width(200.dp).height(400.dp)){
             val listState = rememberLazyListState()
+            // 性能优化：添加 key 参数使用文件绝对路径作为唯一标识符，添加 contentType 参数
             LazyColumn(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -200,7 +201,12 @@ fun VocabularyList(
                     .height(400.dp),
                 state = listState
             ) {
-                items(files!!) { file ->
+                items(
+                    count = files!!.size,
+                    key = { index -> files!![index].absolutePath },
+                    contentType = { 0 }
+                ) { index ->
+                    val file = files!![index]
                     val name = formatName(file, directory)
                     DropdownMenuItem(onClick = { selectedFile(file) }) {
                         Text(

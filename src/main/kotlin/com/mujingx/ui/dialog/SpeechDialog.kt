@@ -293,8 +293,14 @@ fun AzureTTSDialog(
                         ) {
                             Box(Modifier.width(246.dp).height(460.dp)){
                                 val scrollState = rememberLazyListState()
+                                // 性能优化：添加 key 参数使用语音短名称作为唯一标识符，添加 contentType 参数
                                 LazyColumn(Modifier.fillMaxSize(),scrollState){
-                                    items(voiceList){voice ->
+                                    items(
+                                        count = voiceList.size,
+                                        key = { index -> voiceList[index].ShortName },
+                                        contentType = { 0 }
+                                    ) { index ->
+                                        val voice = voiceList[index]
                                         if(voice.Locale == azureTTS.pronunciationStyle){
                                             DropdownMenuItem(
                                                 onClick = {

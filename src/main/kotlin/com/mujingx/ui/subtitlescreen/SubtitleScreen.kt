@@ -707,6 +707,7 @@ fun SubtitleScreen(
 
                     if(actualLength < 50) rowWidth += 120.dp
 
+                    // 性能优化：添加 key 参数使用字幕索引作为唯一标识符，添加 contentType 参数
                     LazyColumn(
                         state = listState,
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -717,7 +718,12 @@ fun SubtitleScreen(
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
                             .horizontalScroll(stateHorizontal),
                     ) {
-                        itemsIndexed(captionList) { index, caption ->
+                        items(
+                            count = captionList.size,
+                            key = { index -> index },
+                            contentType = { 0 }
+                        ) { index ->
+                            val caption = captionList[index]
                             var selectable by remember { mutableStateOf(false) }
                             val textFieldRequester = remember { FocusRequester() }
                             val next :() -> Unit = {

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberDialogState
+import androidx.compose.ui.platform.testTag
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import com.mujingx.state.AppState
@@ -195,13 +196,18 @@ fun SettingTextStyle(
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize().padding(top = 48.dp, bottom = 60.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 48.dp, bottom = 60.dp)
+                .testTag("TextStylePage")
         ) {
             Column(Modifier.width(600.dp)) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(start = 50.dp, top = 20.dp, bottom = 10.dp, end = 50.dp)
+                    modifier = Modifier
+                        .padding(start = 50.dp, top = 20.dp, bottom = 10.dp, end = 50.dp)
+                        .testTag("WordStyleRow")
                 ) {
 
                     Text("单词的样式")
@@ -225,6 +231,7 @@ fun SettingTextStyle(
                             onClick = { spacingExpanded = true },
                             modifier = Modifier
                                 .width(120.dp)
+                                .testTag("LetterSpacingButton")
                                 .background(Color.Transparent)
                                 .border(1.dp, Color.Transparent)
                         ) {
@@ -552,6 +559,7 @@ fun SettingTheme(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.width(width).padding(end = 10.dp)
+                    .testTag("DarkModeButton")
                     .clickable {
                         scope.launch {
                             if(appState.global.isFollowSystemTheme || !appState.global.isDarkTheme){
@@ -578,6 +586,7 @@ fun SettingTheme(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.width(width).padding(end = 10.dp)
+                    .testTag("LightModeButton")
                     .clickable {
                        scope.launch {
                            if(appState.global.isFollowSystemTheme || appState.global.isDarkTheme){
@@ -605,6 +614,7 @@ fun SettingTheme(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.width(width).padding(end = 10.dp)
+                    .testTag("SystemThemeButton")
                     .clickable {
                         scope.launch {
                             if(!appState.global.isFollowSystemTheme){

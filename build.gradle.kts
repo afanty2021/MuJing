@@ -350,6 +350,26 @@ tasks.named("test") {
     finalizedBy(testLast)
 }
 
+// 新增一个运行 UI 测试的任务
+val testUi by tasks.registering(Test::class) {
+    description = "Runs UI tests (requires display environment)."
+    group = "verification"
+
+    // 复用测试编译产物与依赖
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+
+    // 不排除任何测试（与默认 test 任务相反）
+    // 使用 JUnit Platform
+    useJUnitPlatform()
+
+    // 测试日志配置
+    testLogging {
+        events("passed", "skipped", "failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
 // 让 `check` 任务覆盖到最后执行的测试（通过 finalizedBy 已涵盖，这里显式依赖更清晰）
 tasks.named("check") {
     dependsOn(testLast)

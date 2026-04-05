@@ -220,6 +220,7 @@ fun VocabularyCategory(
                 files.sortBy{it.nameWithoutExtension.split(" ")[0].toFloat()}
             }
             val listState = rememberLazyGridState()
+            // 性能优化：添加 key 参数使用文件绝对路径作为唯一标识符，添加 contentType 参数
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(160.dp),
                 contentPadding = PaddingValues(2.dp),
@@ -227,7 +228,12 @@ fun VocabularyCategory(
                 state = listState
             ) {
 
-                items(files){file ->
+                items(
+                    count = files.size,
+                    key = { index -> files[index].absolutePath },
+                    contentType = { 0 }
+                ) { index ->
+                    val file = files[index]
 
                     var name = file.nameWithoutExtension
                     if(directory.nameWithoutExtension == "人教版英语" ||

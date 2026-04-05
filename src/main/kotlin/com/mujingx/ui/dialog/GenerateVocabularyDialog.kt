@@ -2019,8 +2019,14 @@ fun SelectedList(
     removeFile: (File) -> Unit
 ) {
     Column(Modifier.fillMaxWidth()) {
+        // 性能优化：添加 key 参数使用文件绝对路径作为唯一标识符，添加 contentType 参数
         LazyColumn {
-            items(list) { file ->
+            items(
+                count = list.size,
+                key = { index -> list[index].absolutePath },
+                contentType = { 0 }
+            ) { index ->
+                val file = list[index]
 
                 Box(
                     modifier = Modifier.clickable {}
@@ -2916,11 +2922,17 @@ fun PreviewWords(
                 val selectedList = remember { mutableStateListOf<Word>() }
                 var latestSelectedIndex by remember { mutableStateOf(-1) }
                 val topPadding = if (selectedList.isNotEmpty()) 0.dp else 0.dp
+                // 性能优化：添加 key 参数使用单词的 value 作为唯一标识符，添加 contentType 参数
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.padding(top = topPadding).fillMaxSize()
                 ) {
-                    itemsIndexed(sortedList) { index: Int, word: Word ->
+                    items(
+                        count = sortedList.size,
+                        key = { index -> sortedList[index].value },
+                        contentType = { 0 }
+                    ) { index ->
+                        val word = sortedList[index]
                         val selected = selectedList.contains(word)
 
                         Row(
@@ -3031,11 +3043,17 @@ fun TaskList(
     }
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
+        // 性能优化：改进 key 参数使用文件绝对路径作为唯一标识符，添加 contentType 参数
         LazyColumn(
             state = lazyListState,
             modifier = Modifier.fillMaxSize()
         ) {
-            items(items, key = {it} ) { item ->
+            items(
+                count = items.size,
+                key = { index -> items[index].absolutePath },
+                contentType = { 0 }
+            ) { index ->
+                val item = items[index]
                 ReorderableItem(state, key = item) { isDragging ->
                     val elevation = animateDpAsState(if (isDragging) 4.dp else 0.dp)
                     Surface(elevation = elevation.value) {
