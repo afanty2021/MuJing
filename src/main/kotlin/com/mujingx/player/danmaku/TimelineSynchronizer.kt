@@ -118,8 +118,8 @@ class TimelineSynchronizer(
      * 处理时间跳跃（快进、快退等）
      */
     private fun handleTimeJump(newTimeMs: Long) {
-        // 重新定位索引
-        currentIndex = findIndexForTime(newTimeMs)
+        // 时间跳跃时从开头重新扫描，处理所有 <= newTimeMs 的弹幕
+        currentIndex = 0
 
         // 触发当前时间点的弹幕
         processTimedDanmakus(newTimeMs)
