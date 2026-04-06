@@ -1062,7 +1062,7 @@ fun MainContent(
                                     break
                                 }
                             }
-                        } catch (e: Exception) {
+                        } catch (e: IOException) {
                             e.printStackTrace()
                             JOptionPane.showMessageDialog(window, "保存词库失败,错误信息:\n${e.message}")
                         }
@@ -1090,7 +1090,7 @@ fun MainContent(
                         try{
                             wordScreenState.vocabulary.wordList.shuffle()
                             wordScreenState.saveCurrentVocabulary()
-                        }catch(e:Exception){
+                        }catch(e:IOException){
                             e.printStackTrace()
                             JOptionPane.showMessageDialog(window, "保存词库失败,错误信息:\n${e.message}")
                         }
@@ -1358,7 +1358,7 @@ fun MainContent(
                             try{
                                 wordScreenState.saveCurrentVocabulary()
                                 showEditWordDialog = false
-                            }catch(e:Exception){
+                            }catch(e:IOException){
                                 // 回滚
                                 wordScreenState.vocabulary.wordList.removeAt(index)
                                 wordScreenState.vocabulary.wordList.add(index, currentWord)
