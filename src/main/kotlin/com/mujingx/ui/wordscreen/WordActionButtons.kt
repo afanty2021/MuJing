@@ -25,41 +25,60 @@ import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.TooltipPlacement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.dp
 import com.mujingx.icons.AddNotes
 import com.mujingx.theme.LocalCtrl
 import com.mujingx.player.isMacOS
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.schedule
 
 /** 删除按钮*/
 @Composable
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 fun DeleteButton(
-    onClick:()->Unit,
+    onClick: () -> Unit,
     tooltipAlignment: Alignment = Alignment.TopCenter,
-){
-    val offset = if(tooltipAlignment == Alignment.TopCenter) DpOffset(0.dp,0.dp) else DpOffset(0.dp,10.dp)
+) {
+    val offset = if (tooltipAlignment == Alignment.TopCenter) {
+        DpOffset(0.dp, 0.dp)
+    } else {
+        DpOffset(0.dp, 10.dp)
+    }
+
     TooltipArea(
         tooltip = {
             Surface(
@@ -75,7 +94,7 @@ fun DeleteButton(
                     val ctrl = LocalCtrl.current
                     val shortcutText = if (isMacOS()) "  $ctrl Delete" else "  $ctrl+Delete"
                     // 在视频播放器不显示快捷键
-                    val text = if(tooltipAlignment == Alignment.TopCenter) shortcutText else ""
+                    val text = if (tooltipAlignment == Alignment.TopCenter) shortcutText else ""
                     CompositionLocalProvider(LocalContentAlpha provides 0.5f) {
                         Text(text = text)
                     }
@@ -90,12 +109,17 @@ fun DeleteButton(
             offset = offset
         )
     ) {
-        IconButton(onClick = { onClick() },modifier = Modifier.onKeyEvent { keyEvent ->
-            if(keyEvent.key == Key.Spacebar && keyEvent.type == KeyEventType.KeyUp){
-                onClick()
-                true
-            }else false
-        }) {
+        IconButton(
+            onClick = { onClick() },
+            modifier = Modifier.onKeyEvent { keyEvent ->
+                if (keyEvent.key == Key.Spacebar && keyEvent.type == KeyEventType.KeyUp) {
+                    onClick()
+                    true
+                } else {
+                    false
+                }
+            }
+        ) {
             Icon(
                 Icons.Outlined.Delete,
                 contentDescription = "Localized description",
@@ -109,11 +133,16 @@ fun DeleteButton(
 @Composable
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 fun AddButton(
-    onClick:()->Unit,
+    onClick: () -> Unit,
     tooltipAlignment: Alignment = Alignment.TopCenter,
-){
+) {
 
-    val offset = if(tooltipAlignment == Alignment.TopCenter) DpOffset(0.dp,0.dp) else DpOffset(0.dp,10.dp)
+    val offset = if (tooltipAlignment == Alignment.TopCenter) {
+        DpOffset(0.dp, 0.dp)
+    } else {
+        DpOffset(0.dp, 10.dp)
+    }
+
     TooltipArea(
         tooltip = {
             Surface(
@@ -138,7 +167,10 @@ fun AddButton(
             offset = offset
         )
     ) {
-        IconButton(onClick = { onClick() },modifier = Modifier) {
+        IconButton(
+            onClick = { onClick() },
+            modifier = Modifier
+        ) {
             Icon(
                 AddNotes,
                 contentDescription = "Localized description",
@@ -153,7 +185,7 @@ fun AddButton(
 /** 编辑按钮*/
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun EditButton(onClick: () -> Unit){
+fun EditButton(onClick: () -> Unit) {
     TooltipArea(
         tooltip = {
             Surface(
@@ -172,7 +204,7 @@ fun EditButton(onClick: () -> Unit){
         )
     ) {
         IconButton(onClick = {
-//            showEditWordDialog = true
+            //            showEditWordDialog = true
             onClick()
         }) {
             Icon(
@@ -188,10 +220,10 @@ fun EditButton(onClick: () -> Unit){
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 fun HardButton(
-    contains:Boolean,
+    contains: Boolean,
     onClick: () -> Unit,
-    fontFamily:FontFamily,
-){
+    fontFamily: FontFamily,
+) {
     TooltipArea(
         tooltip = {
             Surface(
@@ -204,7 +236,7 @@ fun HardButton(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(10.dp)
                 ) {
-                    val text = if(contains) "从困难词库中移除  " else "添加到困难词库  "
+                    val text = if (contains) "从困难词库中移除  " else "添加到困难词库  "
                     Text(text = text)
 
                     val ctrl = LocalCtrl.current
@@ -225,8 +257,8 @@ fun HardButton(
     ) {
 
         IconButton(onClick = { onClick() }) {
-            val icon = if(contains) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder
-            val tint = if(contains) Color(255, 152, 0) else MaterialTheme.colors.onBackground
+            val icon = if (contains) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder
+            val tint = if (contains) Color(255, 152, 0) else MaterialTheme.colors.onBackground
             Icon(
                 icon,
                 contentDescription = "Localized description",
@@ -242,9 +274,14 @@ fun HardButton(
 fun FamiliarButton(
     onClick: () -> Unit,
     tooltipAlignment: Alignment = Alignment.TopCenter,
-){
-    val offset = if(tooltipAlignment == Alignment.TopCenter) DpOffset(0.dp,0.dp) else DpOffset(0.dp,10.dp)
-    val text = if(tooltipAlignment == Alignment.TopCenter) "移动到熟悉词库" else "添加到熟悉词库"
+) {
+    val offset = if (tooltipAlignment == Alignment.TopCenter) {
+        DpOffset(0.dp, 0.dp)
+    } else {
+        DpOffset(0.dp, 10.dp)
+    }
+
+    val text = if (tooltipAlignment == Alignment.TopCenter) "移动到熟悉词库" else "添加到熟悉词库"
     TooltipArea(
         tooltip = {
             Surface(
@@ -260,7 +297,7 @@ fun FamiliarButton(
                     val ctrl = LocalCtrl.current
                     val shortcutText = if (isMacOS()) "  $ctrl Y" else "  $ctrl+Y"
                     // 在视频播放器不显示快捷键
-                    val shortcut = if(tooltipAlignment == Alignment.TopCenter) shortcutText else ""
+                    val shortcut = if (tooltipAlignment == Alignment.TopCenter) shortcutText else ""
                     CompositionLocalProvider(LocalContentAlpha provides 0.5f) {
                         Text(text = shortcut)
                     }
@@ -274,12 +311,17 @@ fun FamiliarButton(
             offset = offset
         )
     ) {
-        IconButton(onClick = { onClick() },modifier = Modifier.onKeyEvent { keyEvent ->
-            if(keyEvent.key == Key.Spacebar && keyEvent.type == KeyEventType.KeyUp){
-                onClick()
-                true
-            }else false
-        }) {
+        IconButton(
+            onClick = { onClick() },
+            modifier = Modifier.onKeyEvent { keyEvent ->
+                if (keyEvent.key == Key.Spacebar && keyEvent.type == KeyEventType.KeyUp) {
+                    onClick()
+                    true
+                } else {
+                    false
+                }
+            }
+        ) {
             Icon(
                 Icons.Outlined.Check,
                 contentDescription = "Localized description",
@@ -293,23 +335,26 @@ fun FamiliarButton(
 @Composable
 fun BookmarkButton(
     modifier: Modifier,
-    contains:Boolean,
-    disappear:() ->Unit
-){
-        IconButton(onClick = {},modifier = modifier) {
-            val icon = if(contains) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder
-            val tint = if(contains) Color(255, 152, 0) else MaterialTheme.colors.onBackground
-            Icon(
-                icon,
-                contentDescription = "Localized description",
-                tint = tint,
-            )
-            SideEffect{
-                Timer("不显示 Bookmark 图标", false).schedule(300) {
-                    disappear()
-                }
+    contains: Boolean,
+    disappear: () -> Unit
+) {
+    IconButton(
+        onClick = {},
+        modifier = modifier
+    ) {
+        val icon = if (contains) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder
+        val tint = if (contains) Color(255, 152, 0) else MaterialTheme.colors.onBackground
+        Icon(
+            icon,
+            contentDescription = "Localized description",
+            tint = tint,
+        )
+        SideEffect {
+            Timer("不显示 Bookmark 图标", false).schedule(300) {
+                disappear()
             }
         }
+    }
 
 }
 
@@ -317,10 +362,14 @@ fun BookmarkButton(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 fun CopyButton(
-    wordValue:String,
+    wordValue: String,
     tooltipAlignment: Alignment = Alignment.TopCenter,
-){
-    val offset = if(tooltipAlignment == Alignment.TopCenter) DpOffset(0.dp,0.dp) else DpOffset(0.dp,10.dp)
+) {
+    val offset = if (tooltipAlignment == Alignment.TopCenter) {
+        DpOffset(0.dp, 0.dp)
+    } else {
+        DpOffset(0.dp, 10.dp)
+    }
 
     TooltipArea(
         tooltip = {
@@ -337,7 +386,7 @@ fun CopyButton(
                     val ctrl = LocalCtrl.current
                     val shortcutText = if (isMacOS()) "$ctrl C" else "$ctrl+C"
                     // 在视频播放器不显示快捷键
-                    val shortcut = if(tooltipAlignment == Alignment.TopCenter) shortcutText else ""
+                    val shortcut = if (tooltipAlignment == Alignment.TopCenter) shortcutText else ""
                     CompositionLocalProvider(LocalContentAlpha provides 0.5f) {
                         Text(text = shortcut)
                     }
@@ -353,14 +402,19 @@ fun CopyButton(
         )
     ) {
         val clipboardManager = LocalClipboardManager.current
-        IconButton(onClick = {
-            clipboardManager.setText(AnnotatedString(wordValue))
-        },modifier = Modifier.onKeyEvent { keyEvent ->
-            if(keyEvent.key == Key.Spacebar && keyEvent.type == KeyEventType.KeyUp){
+        IconButton(
+            onClick = {
                 clipboardManager.setText(AnnotatedString(wordValue))
-                true
-            }else false
-        }) {
+            },
+            modifier = Modifier.onKeyEvent { keyEvent ->
+                if (keyEvent.key == Key.Spacebar && keyEvent.type == KeyEventType.KeyUp) {
+                    clipboardManager.setText(AnnotatedString(wordValue))
+                    true
+                } else {
+                    false
+                }
+            }
+        ) {
             Icon(
                 Icons.Filled.ContentCopy,
                 contentDescription = "Localized description",

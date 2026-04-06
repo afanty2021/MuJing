@@ -59,6 +59,7 @@ fun extractSubtitles(
         val builder = FFmpegBuilder()
             .setVerbosity(verbosity)
             .setInput(input)
+            .done()  // 0.9.1 API: setInput() 后需要调用 done()
             .addOutput(output)
             .addExtraArgs("-map", "0:s:$subtitleId") //  -map 0:s:0 表示提取第一个字幕，-map 0:s:1 表示提取第二个字幕。
             .done()
@@ -89,6 +90,7 @@ fun convertToSrt(
     val builder = FFmpegBuilder()
         .setVerbosity(verbosity)
         .setInput(input)
+        .done()  // 0.9.1 API: setInput() 后需要调用 done()
         .addOutput(output)
         .done()
     val executor = FFmpegExecutor(ffmpeg)
@@ -201,6 +203,7 @@ fun generateSrtWithWhisper(
         val builder = FFmpegBuilder()
             .setVerbosity(Verbosity.INFO)
             .setInput(input)
+            .done()  // 0.9.1 API: setInput() 后需要调用 done()
             .addOutput(output)
             .addExtraArgs("-vn") // 禁用视频流
             .addExtraArgs("-af", whisperFilter)

@@ -10,14 +10,29 @@
 ### 新增
 - HF_ENDPOINT 环境变量支持，可使用 HuggingFace 国内镜像下载 Whisper 模型
 
+### 优化
+- **内存管理优化**：为所有 LazyColumn/LazyVerticalGrid 添加 key 和 contentType 参数
+  - 优化 18 个文件中的列表组件性能
+  - 使用唯一标识符（文件路径、单词值、行号等）作为 key
+  - 减少不必要的重组，提升滚动流畅度
+  - 涉及组件：BuiltInVocabularyDialog, GenVocPreviewWords, SubtitleScreen, TextScreen 等
+
 ### 修复
 - 跳过 Homebrew JDK 供应商检查，修复 macOS 上打包失败问题
 - 统一 kotlinx-serialization 版本为 1.7.3，消除与 filekit 0.12.0 的版本冲突
 - 添加 FSRS schemaVersion 安全校验，防止潜在的 SQL 注入风险
+- **升级 FFmpeg wrapper 从 0.8.0 到 0.9.1**，修复已知安全漏洞
+  - 适配 FFmpegBuilder API 变化：setInput() 后需调用 done()
+  - 修复 extractSubtitles、convertToSrt、generateSrtWithWhisper、VideoUtil 等函数
+  - 所有 FFmpeg 相关测试通过（40/40）
+- **升级 PDFBox 从 2.0.24 到 2.0.36**，修复已知安全漏洞
+  - API 完全兼容，无需代码修改
+  - 所有 GenerateVocabulary 测试通过
 
 ### 测试
 - 新增 70 个单元测试（state、event、lyric、tts 模块）
 - 修复 testLast 测试套件失败问题
+- WordActionButtons.kt 代码风格优化（移除通配符导入，修复代码格式）
 
 ## [2.12.3] - 2025-04-XX
 

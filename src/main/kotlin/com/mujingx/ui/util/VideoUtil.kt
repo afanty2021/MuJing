@@ -381,6 +381,7 @@ fun readCaptionList(
         val builder = FFmpegBuilder()
             .setVerbosity(verbosity)
             .setInput(videoPath)
+            .done()  // 0.9.1 API: setInput() 后需要调用 done()
             .addOutput(subtitlePath)
             .addExtraArgs("-map", "0:s:$subtitleId")
             .done()

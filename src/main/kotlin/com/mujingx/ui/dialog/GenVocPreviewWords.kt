@@ -163,6 +163,7 @@ fun PreviewWords(
         if (showCard) {
             val listGridState = rememberLazyGridState()
             Box(Modifier.fillMaxWidth()) {
+                // 性能优化：添加 key 参数使用单词的 value 作为唯一标识符，添加 contentType 参数
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(130.dp),
                     contentPadding = PaddingValues(15.dp),
@@ -170,7 +171,12 @@ fun PreviewWords(
                         .fillMaxWidth(),
                     state = listGridState
                 ) {
-                    itemsIndexed(sortedList) { _: Int, word ->
+                    items(
+                        count = sortedList.size,
+                        key = { index -> sortedList[index].value },
+                        contentType = { 0 }
+                    ) { index ->
+                        val word = sortedList[index]
 
                         TooltipArea(
                             tooltip = {

@@ -85,8 +85,8 @@ data class Word(
     var captions: MutableList<Caption> = mutableListOf()
 ) {
     override fun equals(other: Any?): Boolean {
-        val otherWord = other as Word
-        return this.value.lowercase() == otherWord.value.lowercase()
+        if (other !is Word) return false
+        return this.value.lowercase() == other.value.lowercase()
     }
 
     override fun hashCode(): Int {

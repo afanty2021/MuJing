@@ -52,7 +52,7 @@ dependencies {
     implementation("com.formdev:flatlaf:3.6.1")
     implementation("com.formdev:flatlaf-extras:2.6")
     implementation("org.apache.opennlp:opennlp-tools:1.9.4")
-    implementation("org.apache.pdfbox:pdfbox:2.0.24")
+    implementation("org.apache.pdfbox:pdfbox:2.0.36")
     implementation(files("lib/ebml-reader-0.1.1.jar"))
     implementation(files("lib/subtitleConvert-1.0.3.jar"))
     implementation(files("lib/jacob-1.20.jar"))
@@ -68,7 +68,7 @@ dependencies {
     implementation ("net.java.dev.jna:jna:5.14.0")
     implementation ("net.java.dev.jna:jna-platform:5.14.0")
     implementation ("ch.qos.logback:logback-classic:1.5.13")
-    implementation("net.bramp.ffmpeg:ffmpeg:0.8.0")
+    implementation("net.bramp.ffmpeg:ffmpeg:0.9.1")
     // 使用的是本地构建的 Filekit 0.12.0 版本
     implementation("io.github.vinceglb:filekit-dialogs:0.12.0")
     implementation("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
