@@ -8,8 +8,8 @@
 
 | 指标 | 数值 | 说明 |
 |------|------|------|
-| 测试文件总数 | 34 | 覆盖 11 个主要模块 |
-| 测试用例总数 | 636 | 包含单元测试、集成测试、UI 测试 |
+| 测试文件总数 | 42 | 覆盖 11 个主要模块 |
+| 测试用例总数 | 791 | 包含单元测试、集成测试、UI 测试 |
 | 测试执行时间 | ~2 分钟 | 完整测试套件 |
 | 测试通过率 | 100% | 所有测试通过 |
 
@@ -128,73 +128,95 @@
 
 ### 🟡 一般覆盖（10-30%）
 
-#### ui 模块（2 个测试文件，12+ 测试用例）
+#### ui 模块（10 个测试文件，167+ 测试用例）
 - `WordScreenTest.kt` - 单词屏幕测试
 - `SettingsDialogTest.kt` - 设置对话框测试（10 个测试用例）
+- `SubtitlesStateTest.kt` - 字幕状态测试（25 个测试用例）✨新增
+- `TextStateTest.kt` - 文本状态测试（25 个测试用例）✨新增
+- `CellVisibleStateTest.kt` - 列可见性状态测试（22 个测试用例）✨新增
+- `SearchStateTest.kt` - 搜索状态测试（28 个测试用例）✨新增
+- `SubtitleScreenTest.kt` - 字幕屏幕 UI 测试（13 个测试用例）✨新增
+- `TextScreenTest.kt` - 文本屏幕 UI 测试（15 个测试用例）✨新增
+- `EditVocabularyTest.kt` - 词库编辑器 UI 测试（16 个测试用例）✨新增
+- `AboutDialogTest.kt` - 关于对话框 UI 测试（11 个测试用例）✨新增
 
 **测试覆盖**：
 - ✅ 基本组件渲染
 - ✅ 设置对话框交互
+- ✅ SubtitleScreen 状态管理✨新增
+- ✅ TextScreen 状态管理✨新增
+- ✅ EditVocabulary 状态管理（列可见性、搜索）✨新增
+- ✅ SubtitleScreen UI 组件渲染测试✨新增
+- ✅ TextScreen UI 组件渲染测试✨新增
+- ✅ EditVocabulary UI 交互测试✨新增
+- ✅ AboutDialog UI 组件测试✨新增
 - ⚠️ 缺少：
-  - 大部分对话框组件无测试
-  - SubtitleScreen 无测试
-  - TextScreen 无测试
-  - EditVocabulary 无测试
-  - Search 无测试
-  - 大部分 UI 组件无测试
+  - 其他对话框组件测试（EditWordDialog、GenerateVocabularyDialog 等）
+  - 完整的集成测试
 
 ## 待补充测试模块
 
 ### 🎯 高优先级（核心功能）
 
-#### 1. SubtitleScreen 组件
+#### 1. SubtitleScreen UI 组件 ✅ 已完成
 **重要性**：核心功能，字幕浏览和跟读
-**建议测试**：
-- 字幕列表渲染
-- 字幕选中高亮
-- 跟读模式切换
-- 字幕导航功能
+**状态**：✅ 已完成 UI 组件渲染测试（13 个测试用例）
+**已完成测试**：
+- ✅ 字幕列表渲染
+- ✅ 字幕选中高亮
+- ✅ 字幕导航功能
+- ✅ 字幕状态管理
+- ✅ 多行字幕显示
+- ⚠️ 缺少：拖放文件测试、播放器集成测试
 
-#### 2. TextScreen 组件
+#### 2. TextScreen UI 组件 ✅ 已完成
 **重要性**：文档阅读功能
-**建议测试**：
-- 文档加载和渲染
-- 文本选择和复制
-- 页面导航
-- 字体缩放
+**状态**：✅ 已完成 UI 组件渲染测试（15 个测试用例）
+**已完成测试**：
+- ✅ 文档加载和渲染
+- ✅ 文本选择
+- ✅ 页面导航
+- ✅ 文本状态管理
+- ✅ 路径处理（Unicode、特殊字符）
+- ⚠️ 缺少：字体缩放测试、文档解析测试
 
-#### 3. EditVocabulary 组件
+#### 3. EditVocabulary UI 组件 ✅ 已完成
 **重要性**：词库管理功能
-**建议测试**：
-- 词库加载和显示
-- 单词编辑
-- 词库保存
-- 导入导出
+**状态**：✅ 已完成 UI 交互测试（16 个测试用例）
+**已完成测试**：
+- ✅ 词库加载和显示
+- ✅ 单词编辑
+- ✅ 列可见性切换
+- ✅ 搜索选项配置
+- ✅ 状态序列化
+- ⚠️ 缺少：导入导出测试、大词库性能测试
 
 ### 🎯 中优先级（辅助功能）
 
-#### 4. Search 组件
+#### 4. Search UI 组件
 **重要性**：单词搜索功能
-**建议测试**：
-- 搜索输入处理
-- 搜索结果显示
-- 搜索历史
-- 模糊匹配
+**状态**：✅ 已完成状态管理测试（28 个测试用例）
+**已完成测试**：
+- ✅ 搜索选项配置
+- ✅ 搜索状态序列化
+- ⚠️ 缺少：搜索输入处理、搜索结果显示测试
 
-#### 5. 对话框组件
+#### 5. 对话框组件 ✅ 部分完成
 **组件列表**：
-- `AboutDialog` - 关于对话框
-- `EditWordDialog` - 编辑单词对话框
-- `GenerateVocabularyDialog` - 生成词库对话框（已拆分）
-- `LinkVocabularyDialog` - 链接词库对话框
-- `MergeVocabularyDialog` - 合并词库对话框
-- `ShortcutKeyDialog` - 快捷键对话框
-- `DonateDialog` - 捐赠对话框
+- `AboutDialog` - 关于对话框 ✅ 已完成测试（11 个测试用例）
+- `SettingsDialog` - 设置对话框 ✅ 已完成测试（10 个测试用例）
+- `EditWordDialog` - 编辑单词对话框 ⚠️ 待测试
+- `GenerateVocabularyDialog` - 生成词库对话框（已拆分）⚠️ 待测试
+- `LinkVocabularyDialog` - 链接词库对话框 ⚠️ 待测试
+- `MergeVocabularyDialog` - 合并词库对话框 ⚠️ 待测试
+- `ShortcutKeyDialog` - 快捷键对话框 ⚠️ 待测试
+- `DonateDialog` - 捐赠对话框 ⚠️ 待测试
 
-**建议测试**：
-- 对话框打开和关闭
-- 表单输入验证
-- 按钮点击响应
+**已完成测试**：
+- ✅ 对话框基本显示和关闭
+- ✅ 标签页导航
+- ✅ 版本号显示
+- ✅ 链接显示
 
 ### 🎯 低优先级（边缘功能）
 
@@ -276,11 +298,32 @@ src/test/kotlin/com/mujingx/
 │   └── TTSFactoryTest.kt
 └── ui/
     ├── WordScreenTest.kt
+    ├── subtitlescreen/
+    │   ├── SubtitlesStateTest.kt ✨新增
+    │   └── SubtitleScreenTest.kt ✨新增
+    ├── textscreen/
+    │   ├── TextStateTest.kt ✨新增
+    │   └── TextScreenTest.kt ✨新增
+    ├── edit/
+    │   ├── CellVisibleStateTest.kt ✨新增
+    │   ├── SearchStateTest.kt ✨新增
+    │   └── EditVocabularyTest.kt ✨新增
     └── dialog/
-        └── SettingsDialogTest.kt
+        ├── SettingsDialogTest.kt
+        └── AboutDialogTest.kt ✨新增
 ```
 
 ## 变更记录
+
+### 2026-04-06 - UI 组件测试扩展 🚀
+- ✅ **新增 UI 组件测试**：补充 55 个 UI 测试用例
+  - SubtitleScreenTest.kt - 13 个测试用例
+  - TextScreenTest.kt - 15 个测试用例
+  - EditVocabularyTest.kt - 16 个测试用例
+  - AboutDialogTest.kt - 11 个测试用例
+- 📈 **测试文件数**：从 38 个增加到 42 个
+- 📊 **测试用例总数**：从 736 个增加到 791 个
+- ✅ **测试通过率**：100% (55/55 新测试通过)
 
 ### 2026-04-06 - 初始报告
 - 📊 统计当前测试覆盖情况
