@@ -97,6 +97,7 @@ import com.mujingx.ui.util.shouldStartDragAndDrop
 import java.awt.Rectangle
 import java.awt.datatransfer.DataFlavor
 import java.io.File
+import java.io.IOException
 import java.nio.file.Paths
 import java.util.*
 import javax.swing.JOptionPane
@@ -192,7 +193,7 @@ fun VocabularyEmpty(
                                         try{
                                             fileToSave.writeBytes(selectedFile!!.readBytes())
                                             openChooseVocabulary(fileToSave.absolutePath)
-                                        }catch (e:Exception){
+                                        }catch (e:IOException){
                                             e.printStackTrace()
                                             JOptionPane.showMessageDialog(parentWindow,"保存失败，错误信息：\n${e.message}")
                                         }

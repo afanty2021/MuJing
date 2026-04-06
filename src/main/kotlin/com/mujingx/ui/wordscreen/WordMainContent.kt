@@ -97,6 +97,7 @@ import com.mujingx.ui.util.shouldStartDragAndDrop
 import java.awt.Rectangle
 import java.awt.datatransfer.DataFlavor
 import java.io.File
+import java.io.IOException
 import java.nio.file.Paths
 import java.util.*
 import javax.swing.JOptionPane
@@ -188,7 +189,7 @@ fun MainContent(
             try{
                 wordScreenState.saveCurrentVocabulary()
                 wordScreenState.clearInputtedState()
-            }catch (e:Exception){
+            }catch (e:IOException){
                 // 回滚
                 wordScreenState.vocabulary.wordList.add(index,currentWord)
                 wordScreenState.vocabulary.size = wordScreenState.vocabulary.wordList.size
@@ -234,7 +235,7 @@ fun MainContent(
             try{
                 saveVocabulary(familiar, file.absolutePath)
                 deleteWord()
-            }catch(e:Exception){
+            }catch(e:IOException){
                 // 回滚
                 if(familiar.wordList.contains(familiarWord)){
                     familiar.wordList.remove(familiarWord)
@@ -261,7 +262,7 @@ fun MainContent(
                     wordScreenState.vocabulary.size = wordScreenState.vocabulary.wordList.size
                     try{
                         wordScreenState.saveCurrentVocabulary()
-                    }catch (e:Exception){
+                    }catch (e:IOException){
                         // 回滚
                         appState.hardVocabulary.wordList.add(index,currentWord)
                         appState.hardVocabulary.size = appState.hardVocabulary.wordList.size
@@ -296,7 +297,7 @@ fun MainContent(
             try{
                 appState.saveHardVocabulary()
                 appState.hardVocabulary.size = appState.hardVocabulary.wordList.size
-            }catch(e:Exception){
+            }catch(e:IOException){
                 // 回滚
                 if(contains){
                     appState.hardVocabulary.wordList.add(index,hardWord)
