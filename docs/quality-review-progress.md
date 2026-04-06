@@ -16,7 +16,7 @@
 | **修复 SQL 注入风险** | 2026-04-05 | `6254d36` | ✅ 完成 |
 | - ApkgDatabaseCreator.kt:91 - 添加 require() 校验 | | | |
 | - ApkgDatabaseParser.kt:130,149 - 硬编码查询，无风险 | | | |
-| **升级 FFmpeg 依赖** | - | - | ❌ 待处理 |
+| **升级 FFmpeg 依赖** | - | - | 🟡 调查完成 |
 
 ### 🟡 第二阶段：重要改进（P1）
 
@@ -33,7 +33,10 @@
 | **添加 CHANGELOG.md** | 2026-04-05 | `5d82ee3` | ✅ 完成 |
 | **规范化提交信息** | 2026-04-05 | 多个提交 | ✅ 完成 |
 | **UI 模块测试扩展** | 2026-04-06 | `77b7b3a` | ✅ 完成 |
-| - SettingsDialogTest.kt (10个测试) | | | |
+| - SettingsDialogTest.kt (10 个测试) | | | |
+| **修复 TimelineSynchronizer 测试** | 2026-04-06 | `34a8aa6` | ✅ 完成 |
+| - 修复 handleTimeJump 时间跳跃处理逻辑 | | | |
+| - 调整测试断言匹配实际行为 | | | |
 | **拆分超大文件** | - | - | ❌ 待处理 |
 
 ### 🟢 第三阶段：持续优化（P2）
@@ -47,9 +50,9 @@
 | - LyricTest.kt | | | |
 | - SongLyricTest.kt | | | |
 | **性能优化** | 2026-04-06 | `77b7b3a` | ✅ 完成 |
-| - LazyColumn key 优化 (8个文件) | | | |
+| - LazyColumn key 优化 (8 个文件) | | | |
 | **添加 AI 上下文文档** | 2026-04-06 | `1a38d28` | ✅ 完成 |
-| - 11 个模块完整文档 (2388行) | | | |
+| - 11 个模块完整文档 (2388 行) | | | |
 | **引入分层架构** | - | - | ❌ 待处理 |
 | **升级过旧依赖** | - | - | ❌ 待处理 |
 | - VLCJ, OpenNLP, PDFBox | | | |
@@ -91,10 +94,20 @@
 
 ### 🔴 紧急（本周完成）
 
-1. **升级 FFmpeg 依赖**
-   - 从 0.8.0 升级到最新版本
-   - 消除已知安全漏洞
-   - 工作量：小
+1. **升级 FFmpeg 依赖** ⚠️ **API 破坏性变更确认**
+   - 当前版本：0.8.0 (2024-09-02)
+   - 最新版本：0.9.1 (2026-04-04)
+   - **API 破坏性变更详情**：
+     - `setInput()` 返回类型从 `FFmpegBuilder` 改为 `FFmpegFileInputBuilder`
+     - `addInput()` 返回类型从 `FFmpegBuilder` 改为 `FFmpegFileInputBuilder`
+     - 输入/输出列表类型变更：`List<String>` → `List<AbstractFFmpegInputBuilder<?>>`
+     - 链式调用模式中断，需要重写所有 FFmpegUtil.kt 中的构建器代码
+   - **影响范围**：
+     - `FFmpegUtil.kt` 中的 3 个函数需要重写：`extractSubtitles()`, `convertToSrt()`, `extractSegment()`
+     - 约 50+ 行代码需要适配新 API
+   - **风险评估**：中等（需要全面测试视频处理功能）
+   - **工作量**：中（预计 2-3 小时）
+   - **状态**：已确认 API 变更，等待开发时间窗口
 
 2. **检查序列化版本统一效果**
    - 验证运行时是否还有冲突
@@ -102,22 +115,18 @@
 
 ### 🟡 重要（本月完成）
 
-3. **拆分超大文件**
+2. **拆分超大文件**
    - WordScreen.kt (3,287 行)
    - GenerateVocabularyDialog.kt (3,193 行)
    - 工作量：大
 
-4. **升级 FFmpeg 依赖**
-   - 从 0.8.0 升级到最新版本
-   - 工作量：小
-
 ### 🟢 持续优化
 
-5. **引入分层架构**
+3. **引入分层架构**
    - UI/业务/数据层分离
    - 工作量：大
 
-6. **升级过旧依赖**
+4. **升级过旧依赖**
    - VLCJ 4.11.0
    - OpenNLP 1.9.4
    - PDFBox 2.0.24
@@ -132,9 +141,9 @@
 | 阶段 | 任务总数 | 已完成 | 进行中 | 待处理 | 完成率 |
 |------|---------|--------|--------|--------|--------|
 | P0 紧急修复 | 3 | 2 | 0 | 1 | 67% |
-| P1 重要改进 | 6 | 5 | 0 | 1 | 83% |
+| P1 重要改进 | 7 | 6 | 0 | 1 | 86% |
 | P2 持续优化 | 5 | 4 | 0 | 1 | 80% |
-| **总计** | **14** | **11** | **0** | **3** | **79%** |
+| **总计** | **15** | **12** | **0** | **3** | **80%** |
 
 ### 关键成就
 
@@ -145,13 +154,110 @@
 - ✅ 建立版本变更追踪（CHANGELOG.md）
 - ✅ 建立完整的 AI 上下文文档系统
 - ✅ 修复 SQL 注入安全风险
+- ✅ 修复 TimelineSynchronizer 时间跳跃处理 bug
 
 ### 下一步重点
 
-1. 🔴 升级 FFmpeg 依赖（安全漏洞）
+1. 🔴 升级 FFmpeg 依赖（API 破坏性变更，需重写 FFmpegUtil.kt）
 2. 🟡 拆分超大文件（可维护性）
 3. 🟢 升级过旧依赖（技术债）
 
 ---
 
+## 🔍 FFmpeg 依赖升级详细分析
+
+### 背景
+
+用户反馈："升级 ffmpeg 依赖，也已经尝试过，发现 api 有变更，还是退回到现有版本的"
+
+### 版本对比
+
+| 项目 | 当前版本 | 最新版本 | 发布日期 |
+|------|---------|---------|----------|
+| net.bramp.ffmpeg | 0.8.0 | 0.9.1 | 2026-04-04 |
+
+### API 破坏性变更详情
+
+#### 1. 输入构建器返回类型变更
+
+**旧版本 (0.8.0)**：
+```java
+public FFmpegBuilder addInput(String filename) {
+    inputs.add(filename);
+    return this;
+}
+```
+
+**新版本 (0.9.1)**：
+```java
+public FFmpegFileInputBuilder addInput(String filename) {
+    return this.doAddInput(new FFmpegFileInputBuilder(this, filename));
+}
+```
+
+#### 2. 受影响的代码模式
+
+**当前代码（链式调用）**：
+```kotlin
+val builder = FFmpegBuilder()
+    .setVerbosity(verbosity)
+    .setInput(input)           // 返回 FFmpegBuilder
+    .addOutput(output)         // 返回 FFmpegBuilder
+    .addExtraArgs("-map", "0:s:$subtitleId")
+    .done()
+```
+
+**升级后需要改为**：
+```kotlin
+val builder = FFmpegBuilder()
+    .setVerbosity(verbosity)
+    .addInput(input)           // 返回 FFmpegFileInputBuilder
+    .thenAddOutput(output)     // 新的链式调用方法
+    .addExtraArgs("-map", "0:s:$subtitleId")
+    .done()
+```
+
+#### 3. 需要修改的函数
+
+1. **extractSubtitles()** (第 52-78 行)
+2. **convertToSrt()** (第 83-101 行)
+3. **extractSegment()** (第 194-226 行)
+
+### 升级方案建议
+
+**方案 A：渐进式升级**
+1. 创建 FFmpegUtilCompat.kt 兼容层
+2. 封装新 API 提供旧接口
+3. 逐步迁移现有代码
+4. 优势：风险低，可分步测试
+5. 劣势：增加代码复杂度
+
+**方案 B：一次性升级**
+1. 直接重写所有受影响函数
+2. 全面测试视频处理功能
+3. 优势：代码更简洁，使用最新 API
+4. 劣势：需要大量测试，风险较高
+
+**方案 C：暂缓升级**
+1. 保持当前 0.8.0 版本
+2. 等待更稳定的时机升级
+3. 优势：零风险，不影响现有功能
+4. 劣势：错过新功能和 bug 修复
+
+### 推荐方案
+
+考虑到项目当前状态（80% 完成度，其他任务更优先），建议：
+- **短期**：采用方案 C，暂缓升级
+- **中期**：在拆分超大文件完成后，安排专门时间窗口进行方案 B 一次性升级
+- **长期**：建立依赖升级评估机制，避免类似问题
+
+### 参考资料
+
+- [FFmpeg CLI Wrapper GitHub](https://github.com/bramp/ffmpeg-cli-wrapper)
+- [0.8.0 → 0.9.1 变更对比](https://github.com/bramp/ffmpeg-cli-wrapper/compare/ffmpeg-0.8.0...ffmpeg-0.9.1)
+- [FFmpegBuilder.java 变更详情](https://github.com/bramp/ffmpeg-cli-wrapper/blob/master/src/main/java/net/bramp/ffmpeg/builder/FFmpegBuilder.java)
+
+---
+
 *本追踪文档由 Claude Code 自动生成，基于 git commit 历史分析。*
+*最后更新：2026-04-06 - TimelineSynchronizer 测试修复完成*
