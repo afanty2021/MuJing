@@ -1,7 +1,7 @@
 # 幕境 (MuJing) - AI 上下文文档
 
-> 最后更新：2026-04-06 04:40
-> 文档版本：1.3.0
+> 最后更新：2026-04-11
+> 文档版本：1.4.0
 > 项目版本：v2.12.3
 
 ## 项目愿景
@@ -32,6 +32,9 @@ compose.desktop.currentOs
 org.jetbrains.compose.material:material-icons-extended:1.0.1
 com.formdev:flatlaf:3.6.1  // Swing Look & Feel
 
+// 依赖注入
+io.insert-koin:koin-core:4.0.4  // Koin DI 框架
+
 // 媒体处理
 uk.co.caprica:vlcj:4.11.0  // VLC Java 绑定
 net.bramp.ffmpeg:ffmpeg:0.8.0  // FFmpeg 包装器
@@ -40,6 +43,10 @@ net.bramp.ffmpeg:ffmpeg:0.8.0  // FFmpeg 包装器
 org.apache.pdfbox:pdfbox:2.0.24  // PDF 处理
 org.apache.poi:poi:5.4.1  // Office 文档
 org.apache.opennlp:opennlp-tools:1.9.4  // NLP 分句
+
+// 网络通信
+io.ktor:ktor-client-core:2.3.13  // HTTP 客户端
+io.ktor:ktor-client-cio:2.3.11   // Ktor CIO 引擎
 
 // 本地库 (JNI)
 files("lib/ebml-reader-0.1.1.jar")  // MKV 解析
@@ -69,6 +76,10 @@ graph TD
     B --> B9["event - 事件总线"];
     B --> B10["theme - 主题配置"];
     B --> B11["icons - 图标资源"];
+    B --> B12["di - 依赖注入"];
+    B --> B13["translation - AI 翻译"];
+    B --> B14["i18n - 国际化"];
+    B --> B15["subtitle - 字幕同步"];
 
     B2 --> B2a["components - UI 组件"];
     B2 --> B2b["dialog - 对话框"];
@@ -84,6 +95,16 @@ graph TD
 
     B4 --> B4a["apkg - Anki 卡片导入/导出"];
     B4 --> B4b["zstd - 压缩算法 JNI"];
+
+    B12 --> B12a["AppModule - 核心服务"];
+    B12 --> B12b["TranslationModule - 翻译服务"];
+    B12 --> B12c["ClipModule - 片段服务"];
+    B12 --> B12d["SubtitleModule - 字幕同步"];
+
+    B13 --> B13a["TranslationService - 翻译接口"];
+    B13 --> B13b["MultiProviderService - 多 Provider 路由"];
+    B13 --> B13c["TranslationCacheRepository - 翻译缓存"];
+    B13 --> B13d["provider - OpenAI/有道/Azure"];
 
     click B1 "./src/main/kotlin/com/mujingx/data/CLAUDE.md" "查看 data 模块文档"
     click B2 "./src/main/kotlin/com/mujingx/ui/CLAUDE.md" "查看 ui 模块文档"
@@ -101,7 +122,7 @@ graph TD
 
 | 模块路径 | 职责描述 | 主要技术 | 入口文件 | 文档状态 |
 |---------|---------|----------|---------|---------|
-| **[data](./src/main/kotlin/com/mujingx/data/)** | 数据模型、词典、词库管理 | Kotlin Serialization, SQLite | `Vocabulary.kt`, `Dictionary.kt` | ✅ 完整 |
+| **[data](./src/main/kotlin/com/mujingx/data/)** | 数据模型、词典、词库、片段管理 | Kotlin Serialization, SQLite | `Vocabulary.kt`, `Dictionary.kt`, `Clip.kt`, `ClipService.kt` | ✅ 完整 |
 | **[ui](./src/main/kotlin/com/mujingx/ui/)** | 用户界面、交互逻辑 | Compose Desktop, FlatLaf | `App.kt`, `WordScreen.kt` | ✅ 完整 |
 | **[player](./src/main/kotlin/com/mujingx/player/)** | 视频播放器、弹幕系统 | VLCJ, Compose Canvas | `VidePlayer.kt`, `danmaku/` | ✅ 完整 |
 | **[fsrs](./src/main/kotlin/com/mujingx/fsrs/)** | 间隔重复算法、Anki 集成 | FSRS 算法, zstd 压缩 | `FSRSService.kt`, `apkg/` | ✅ 完整 |
@@ -111,6 +132,10 @@ graph TD
 | **[state](./src/main/kotlin/com/mujingx/state/)** | 应用状态管理 | Kotlin State | `AppState.kt`, `GlobalState.kt` | ✅ 完整 |
 | **[event](./src/main/kotlin/com/mujingx/event/)** | 事件总线、快捷键 | Kotlin Flow | `EventBus.kt`, `WindowKeyEvent.kt` | ✅ 完整 |
 | **[theme](./src/main/kotlin/com/mujingx/theme/)** | 主题配置、颜色方案 | Compose Material | `colors.kt`, `CustomLocalProvider.kt` | ✅ 完整 |
+| **[di](./src/main/kotlin/com/mujingx/di/)** | Koin 依赖注入模块定义 | Koin 4.x | `AppModule.kt`, `TranslationModule.kt`, `ClipModule.kt`, `SubtitleModule.kt` | 🆕 新增 |
+| **[translation](./src/main/kotlin/com/mujingx/translation/)** | AI 翻译服务、多 Provider 路由、翻译缓存 | Ktor, SQLite, kotlinx.serialization | `TranslationService.kt`, `MultiProviderTranslationService.kt` | 🆕 新增 |
+| **[i18n](./src/main/kotlin/com/mujingx/i18n/)** | 国际化运行时、字符串资源管理 | Compose, JSON | `I18n.kt` | 🆕 新增 |
+| **[subtitle](./src/main/kotlin/com/mujingx/subtitle/)** | 字幕同步精度（全局偏移+逐句微调） | SQLite, 内存缓存 | `SubtitleSyncService.kt`, `SubtitleSyncServiceImpl.kt` | 🆕 新增 |
 | **[rust-zstd-jni](./rust-zstd-jni/)** | Rust JNI zstd 压缩库 | Rust, JNI | `src/lib.rs` | ⚠️ 可选 |
 
 ## 运行与开发
@@ -188,6 +213,9 @@ graph TD
 - ✅ **词典查询**：单元测试
 - ✅ **字幕解析**：功能测试
 - ✅ **SettingsDialog**：完整 UI 测试（10/10 通过，100% 覆盖率）
+- ✅ **AI 翻译服务**：TranslationServiceTest（3 tests），TranslationCacheRepositoryTest（4 tests）
+- ✅ **片段管理**：ClipRepositoryTest（2 tests）
+- ✅ **字幕同步**：SubtitleSyncServiceTest（5 tests）
 - ⚠️ **其他 UI 组件**：部分覆盖（需要显示环境）
 - ⚠️ **播放器集成**：手动测试（需要媒体文件）
 
@@ -379,6 +407,28 @@ fun PreviewMyComponent() {
 - [VLC 媒体播放器](https://www.videolan.org/vlc/)
 
 ## 变更记录 (Changelog)
+
+### 2026-04-11 - 功能增强：DI/翻译/i18n/片段/字幕同步 v1.4.0
+- 🏗️ **P0-1 Koin DI 框架**：引入 Koin 4.0.4，仅覆盖 Service/Repository 层
+  - 新增 4 个 DI 模块：AppModule、TranslationModule、ClipModule、SubtitleModule
+  - Main.kt 中初始化 Koin 容器
+- 🤖 **P0-2 AI 翻译功能**：多 Provider 翻译服务架构
+  - TranslationService 接口 + MultiProviderTranslationService 自动 fallback 路由
+  - 3 个翻译 Provider：OpenAI (GPT-4o-mini)、有道翻译 (API v3)、Azure Cognitive Services
+  - SQLite 翻译缓存层，避免重复 API 调用
+- 🌐 **P1-1 i18n 架构**：国际化运行时核心
+  - I18n.t("key") 静态 API + Compose LocalI18n 集成
+  - zh-CN.json（~50 个 key）和 en.json（占位）语言包
+- 📌 **P1-2 片段管理**：数据模型和持久化层
+  - Clip + ClipCollection 数据模型 + SQLite 表定义
+  - ClipRepository（CRUD）+ ClipService（业务逻辑）
+- ⏱️ **P1-3 字幕同步**：双层偏移机制
+  - SubtitleSyncService 全局偏移 + 逐句微调接口
+  - SubtitleSyncServiceImpl 内存缓存 + SQLite 持久化
+- 🧪 **新增 14 个测试**：全部通过（翻译服务 3、翻译缓存 4、片段仓库 2、字幕同步 5）
+- 📦 **新增依赖**：koin-core:4.0.4、ktor-client-core:2.3.13、ktor-client-cio:2.3.11
+- 📝 **设计文档**：`docs/superpowers/specs/2026-04-11-mujing-feature-enhancement-design.md`
+- 📋 **实施计划**：`docs/superpowers/plans/2026-04-11-mujing-feature-enhancement-plan.md`
 
 ### 2026-04-06 04:40 - 添加 UI 测试和性能优化 v1.3.0
 - ✅ **UI 测试扩展**：新增 SettingsDialogTest.kt，10 个测试用例全部通过
