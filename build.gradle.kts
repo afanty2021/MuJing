@@ -65,6 +65,8 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.44.1.0")
     implementation ("io.ktor:ktor-client-core:2.3.13")
     implementation ("io.ktor:ktor-client-cio:2.3.11")
+    implementation ("io.ktor:ktor-client-content-negotiation:2.3.13")
+    implementation ("io.ktor:ktor-serialization-kotlinx-json:2.3.13")
     implementation ("net.java.dev.jna:jna:5.14.0")
     implementation ("net.java.dev.jna:jna-platform:5.14.0")
     implementation ("ch.qos.logback:logback-classic:1.5.13")
@@ -73,6 +75,8 @@ dependencies {
     implementation("io.github.vinceglb:filekit-dialogs:0.12.0")
     implementation("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
 
+    // Koin 依赖注入框架
+    implementation("io.insert-koin:koin-core:4.0.4")
 
     // 如果需要 Compose UI 测试，保留这个
     testImplementation(compose.desktop.uiTestJUnit4)

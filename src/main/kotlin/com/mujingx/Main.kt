@@ -27,17 +27,27 @@ import io.github.vinceglb.filekit.FileKit
 import kotlinx.serialization.ExperimentalSerializationApi
 import com.mujingx.theme.isSystemDarkMode
 import com.mujingx.ui.App
+import com.mujingx.di.appModule
+import com.mujingx.di.translationModule
+import com.mujingx.di.clipModule
+import com.mujingx.di.subtitleModule
+import com.mujingx.i18n.I18n
+import org.koin.core.context.startKoin
 
 
 @OptIn(ExperimentalSerializationApi::class)
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 fun main() = application {
+    startKoin {
+        modules(appModule, translationModule, clipModule, subtitleModule)
+    }
     init()
     App()
 }
 
 fun init(){
+    I18n.init()
     FileKit.init(appId = "幕境")
     if(isSystemDarkMode()) {
         FlatDarkLaf.setup()
