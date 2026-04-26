@@ -277,7 +277,7 @@ val downloadWhisperModels by tasks.registering {
         }
 
         // 需要下载的模型列表
-        val models = listOf("base.en")
+        val models = listOf("base.en", "medium")
 
         for (model in models) {
             val modelFile = File(modelsDir, "ggml-$model.bin")

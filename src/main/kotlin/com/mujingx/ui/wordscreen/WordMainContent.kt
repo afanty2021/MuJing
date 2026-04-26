@@ -78,6 +78,7 @@ import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import com.mujingx.player.*
 import com.mujingx.state.AppState
@@ -178,7 +179,7 @@ fun MainContent(
         /** 是否正在播放单词发音 */
         var isPlayingAudio by remember { mutableStateOf(false) }
         /** 删除当前单词 */
-        val deleteWord:() -> Unit = {
+        val deleteWord:suspend () -> Unit = {
             val index = wordScreenState.index
             wordScreenState.vocabulary.wordList.removeAt(index)
             wordScreenState.vocabulary.size = wordScreenState.vocabulary.wordList.size
@@ -187,7 +188,9 @@ fun MainContent(
                 appState.hardVocabulary.size = appState.hardVocabulary.wordList.size
             }
             try{
-                wordScreenState.saveCurrentVocabulary()
+                withContext(Dispatchers.IO) {
+                    wordScreenState.saveCurrentVocabulary()
+                }
                 wordScreenState.clearInputtedState()
             }catch (e:IOException){
                 // 回滚
@@ -203,112 +206,125 @@ fun MainContent(
         }
 
         /** 把当前单词加入到熟悉词库 */
-        val addToFamiliar:() -> Unit = {
-            val file = getFamiliarVocabularyFile()
-            val familiar = loadVocabulary(file.absolutePath)
-            val familiarWord = currentWord.deepCopy()
-            // 如果当前词库是 MKV 或 SUBTITLES 类型的词库，需要把内置词库转换成外部词库。
-            if (wordScreenState.vocabulary.type == VocabularyType.MKV ||
-                wordScreenState.vocabulary.type == VocabularyType.SUBTITLES
-            ) {
-                familiarWord.captions.forEach{ caption ->
-                    val externalCaption = ExternalCaption(
-                        relateVideoPath = wordScreenState.vocabulary.relateVideoPath,
-                        subtitlesTrackId = wordScreenState.vocabulary.subtitlesTrackId,
-                        subtitlesName = wordScreenState.vocabulary.name,
-                        start = caption.start,
-                        end = caption.end,
-                        content = caption.content
-                    )
-                    familiarWord.externalCaptions.add(externalCaption)
-                }
-                familiarWord.captions.clear()
+        val addToFamiliar:suspend () -> Unit = {
+            kotlinx.coroutines.withContext(Dispatchers.IO) {
+                val file = getFamiliarVocabularyFile()
+                val familiar = loadVocabulary(file.absolutePath)
+                val familiarWord = currentWord.deepCopy()
+                // 如果当前词库是 MKV 或 SUBTITLES 类型的词库，需要把内置词库转换成外部词库。
+                if (wordScreenState.vocabulary.type == VocabularyType.MKV ||
+                    wordScreenState.vocabulary.type == VocabularyType.SUBTITLES
+                ) {
+                    familiarWord.captions.forEach{ caption ->
+                        val externalCaption = ExternalCaption(
+                            relateVideoPath = wordScreenState.vocabulary.relateVideoPath,
+                            subtitlesTrackId = wordScreenState.vocabulary.subtitlesTrackId,
+                            subtitlesName = wordScreenState.vocabulary.name,
+                            start = caption.start,
+                            end = caption.end,
+                            content = caption.content
+                        )
+                        familiarWord.externalCaptions.add(externalCaption)
+                    }
+                    familiarWord.captions.clear()
 
-            }
-            if(familiar.name.isEmpty()){
-                familiar.name = "FamiliarVocabulary"
-            }
-            if(!familiar.wordList.contains(familiarWord)){
-                familiar.wordList.add(familiarWord)
-                familiar.size = familiar.wordList.size
-            }
-            try{
-                saveVocabulary(familiar, file.absolutePath)
-                deleteWord()
-            }catch(e:IOException){
-                // 回滚
-                if(familiar.wordList.contains(familiarWord)){
-                    familiar.wordList.remove(familiarWord)
+                }
+                if(familiar.name.isEmpty()){
+                    familiar.name = "FamiliarVocabulary"
+                }
+                if(!familiar.wordList.contains(familiarWord)){
+                    familiar.wordList.add(familiarWord)
                     familiar.size = familiar.wordList.size
                 }
+                try{
+                    saveVocabulary(familiar, file.absolutePath)
+                    withContext(Dispatchers.Main) {
+                        deleteWord()
+                    }
+                }catch(e:IOException){
+                    // 回滚
+                    if(familiar.wordList.contains(familiarWord)){
+                        familiar.wordList.remove(familiarWord)
+                        familiar.size = familiar.wordList.size
+                    }
 
-                e.printStackTrace()
-                JOptionPane.showMessageDialog(window, "保存熟悉词库失败,错误信息:\n${e.message}")
+                    e.printStackTrace()
+                    withContext(Dispatchers.Main) {
+                        JOptionPane.showMessageDialog(window, "保存熟悉词库失败,错误信息:\n${e.message}")
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    showFamiliarDialog = false
+                }
             }
-            showFamiliarDialog = false
         }
 
         /** 处理加入到困难词库的函数 */
-        val bookmarkClick :() -> Unit = {
-            val hardWord = currentWord.deepCopy()
-            val contains = appState.hardVocabulary.wordList.contains(currentWord)
-            val index = appState.hardVocabulary.wordList.indexOf(currentWord)
-            if(contains){
-                appState.hardVocabulary.wordList.removeAt(index)
-                // 如果当前词库是困难词库，说明用户想把单词从困难词库（当前词库）删除
-                if(wordScreenState.vocabulary.name == "HardVocabulary"){
-                    wordScreenState.clearInputtedState()
-                    wordScreenState.vocabulary.wordList.remove(currentWord)
-                    wordScreenState.vocabulary.size = wordScreenState.vocabulary.wordList.size
-                    try{
-                        wordScreenState.saveCurrentVocabulary()
-                    }catch (e:IOException){
-                        // 回滚
-                        appState.hardVocabulary.wordList.add(index,currentWord)
-                        appState.hardVocabulary.size = appState.hardVocabulary.wordList.size
-                        wordScreenState.vocabulary.wordList.add(wordScreenState.index,currentWord)
-                        wordScreenState.vocabulary.size = wordScreenState.vocabulary.wordList.size
-
-                        e.printStackTrace()
-                        JOptionPane.showMessageDialog(window, "保存当前词库失败,错误信息:\n${e.message}")
-                    }
-
-                }
-            }else{
-                val relateVideoPath = wordScreenState.vocabulary.relateVideoPath
-                val subtitlesTrackId = wordScreenState.vocabulary.subtitlesTrackId
-                val subtitlesName =
-                    if (wordScreenState.vocabulary.type == VocabularyType.SUBTITLES) wordScreenState.vocabulary.name else ""
-
-                currentWord.captions.forEach { caption ->
-                    val externalCaption = ExternalCaption(
-                        relateVideoPath,
-                        subtitlesTrackId,
-                        subtitlesName,
-                        caption.start,
-                        caption.end,
-                        caption.content
-                    )
-                    hardWord.externalCaptions.add(externalCaption)
-                }
-                hardWord.captions.clear()
-                appState.hardVocabulary.wordList.add(hardWord)
-            }
-            try{
-                appState.saveHardVocabulary()
-                appState.hardVocabulary.size = appState.hardVocabulary.wordList.size
-            }catch(e:IOException){
-                // 回滚
+        val bookmarkClick :suspend () -> Unit = {
+            kotlinx.coroutines.withContext(Dispatchers.IO) {
+                val hardWord = currentWord.deepCopy()
+                val contains = appState.hardVocabulary.wordList.contains(currentWord)
+                val index = appState.hardVocabulary.wordList.indexOf(currentWord)
                 if(contains){
-                    appState.hardVocabulary.wordList.add(index,hardWord)
+                    appState.hardVocabulary.wordList.removeAt(index)
+                    // 如果当前词库是困难词库，说明用户想把单词从困难词库（当前词库）删除
+                    if(wordScreenState.vocabulary.name == "HardVocabulary"){
+                        wordScreenState.clearInputtedState()
+                        wordScreenState.vocabulary.wordList.remove(currentWord)
+                        wordScreenState.vocabulary.size = wordScreenState.vocabulary.wordList.size
+                        try{
+                            wordScreenState.saveCurrentVocabulary()
+                        }catch (e:IOException){
+                            // 回滚
+                            appState.hardVocabulary.wordList.add(index,currentWord)
+                            appState.hardVocabulary.size = appState.hardVocabulary.wordList.size
+                            wordScreenState.vocabulary.wordList.add(wordScreenState.index,currentWord)
+                            wordScreenState.vocabulary.size = wordScreenState.vocabulary.wordList.size
+
+                            e.printStackTrace()
+                            withContext(Dispatchers.Main) {
+                                JOptionPane.showMessageDialog(window, "保存当前词库失败,错误信息:\n${e.message}")
+                            }
+                        }
+
+                    }
                 }else{
+                    val relateVideoPath = wordScreenState.vocabulary.relateVideoPath
+                    val subtitlesTrackId = wordScreenState.vocabulary.subtitlesTrackId
+                    val subtitlesName =
+                        if (wordScreenState.vocabulary.type == VocabularyType.SUBTITLES) wordScreenState.vocabulary.name else ""
 
-                    appState.hardVocabulary.wordList.remove(hardWord)
+                    currentWord.captions.forEach { caption ->
+                        val externalCaption = ExternalCaption(
+                            relateVideoPath,
+                            subtitlesTrackId,
+                            subtitlesName,
+                            caption.start,
+                            caption.end,
+                            caption.content
+                        )
+                        hardWord.externalCaptions.add(externalCaption)
+                    }
+                    hardWord.captions.clear()
+                    appState.hardVocabulary.wordList.add(hardWord)
                 }
-                e.printStackTrace()
-                JOptionPane.showMessageDialog(window, "保存困难词库失败,错误信息:\n${e.message}")
-            }
+                try{
+                    appState.saveHardVocabulary()
+                    appState.hardVocabulary.size = appState.hardVocabulary.wordList.size
+                }catch(e:IOException){
+                    // 回滚
+                    if(contains){
+                        appState.hardVocabulary.wordList.add(index,hardWord)
+                    }else{
 
+                        appState.hardVocabulary.wordList.remove(hardWord)
+                    }
+                    e.printStackTrace()
+                    withContext(Dispatchers.Main) {
+                        JOptionPane.showMessageDialog(window, "保存困难词库失败,错误信息:\n${e.message}")
+                    }
+                }
+            }
         }
 
         /** 焦点请求 */
@@ -1189,7 +1205,7 @@ fun MainContent(
 
                         })
                         HardButton(
-                            onClick = { bookmarkClick() },
+                            onClick = { scope.launch { bookmarkClick() } },
                             contains = contains,
                             fontFamily = monospace
                         )
